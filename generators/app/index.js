@@ -27,7 +27,9 @@ module.exports = yeoman.Base.extend({
       'LICENSE',
       'package.json',
       'README.md',
-      'HISTORY.md'
+      'HISTORY.md',
+      'gulpfile.js',
+      'webpack.config.js'
     ];
 
     var prompts = [{
