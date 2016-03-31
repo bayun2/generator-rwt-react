@@ -38,7 +38,7 @@ export function receiveMainInfoError(errMsg) {
 export function fetchMainInfo() {
   return (dispatch, getState) => {
     $.ajax({
-      url: '/data/activity-data.json',
+      url: 'xxxx.json',
       type:'GET',
       dataType:'json',
       success: function(data) {

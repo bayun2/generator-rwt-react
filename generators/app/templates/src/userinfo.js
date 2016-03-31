@@ -100,7 +100,7 @@ class Userinfo extends React.Component {
       code: this.state.user.code
     }
     $.ajax({
-      url:'/im/fetchReward.json',
+      url:'xxxxx.json',
       type:'POST',
       dataType:'json',
       data: data,
