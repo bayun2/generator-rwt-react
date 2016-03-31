@@ -43,8 +43,7 @@
   },
   "repository": "bayun2/generator-rwt-react",
   "scripts": {
-    "prepublish": "gulp prepublish",
-    "test": "gulp"
+    
   },
   "license": "MIT"
 }
