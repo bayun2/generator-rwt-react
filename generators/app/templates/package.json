@@ -34,6 +34,7 @@
     "file-loader": "~0.8.5",
     "gulp": "^3.9.0",
     "gulp-env": "^0.4.0",
+    "less": "^2.6.1",
     "less-loader": "^2.2.2",
     "object-assign": "~4.0.1",
     "open": "0.0.5",
