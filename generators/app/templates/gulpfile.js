@@ -4,7 +4,6 @@ const gulpWebpack = require('webpack-stream');
 const open = require('open');
 const express = require('express');
 const gulp = require('gulp');
-const path = require('path');
 const del = require('del');
 const env = require('gulp-env');
 const request = require('request');
