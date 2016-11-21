@@ -38,10 +38,12 @@ gulp.task('checkVersion', (cb) => {
   } catch (e) {
     exitCode = e.status;
   } finally {
-    if (exitCode == 0) {
+    if (exitCode === 0) {
       cb('当前工程版本号已经被打成tag');
-    } else if (exitCode != 2) {
+    } else if (exitCode !== 2) {
       cb('获取远程仓库tag失败');
+    } else {
+      cb()
     }
   }
 });
