@@ -21,35 +21,28 @@ gulp.task('clean', ['checkVersion'], (cb) => {
 });
 
 gulp.task('checkVersion', (cb) => {
-  let cmdRst = '';
   let cwd = process.cwd();
+  let version;
   try {
-    cmdRst = execSync('git tag', {
-      cwd: cwd,
-      stdio: 'pipe'
-    }).toString();
-  } catch(e) {
-    if (e.message.indexOf('Not a git repository') !== -1) {
-      cb(`No git repository was found in ${cwd}`);
-    }
-  }
-  let pkg;
-  try {
-    pkg = fs.readFileSync(path.join(cwd, 'package.json'), 'utf-8');
-  } catch(e) {
-    if (e.message.indexOf('ENOENT') !== -1)
-     cb(`Can not find package.json in ${cwd}`);
-  }
-  try {
-    pkg = JSON.parse(pkg);
+    const pkg = JSON.parse(fs.readFileSync(path.join(cwd, 'package.json'), 'utf-8'));
+    version = pkg.version
   } catch (e) {
-    cb(`Can not parse package.json in ${cwd}`);
+    cb(e);
   }
-  let curVersion = pkg.version;
-  if (cmdRst.split('\n').filter(v => !!v).indexOf('publish/' + curVersion) === -1) {
-    cb()
-  } else {
-    cb('当前工程版本号已经被打成tag')
+
+  let exitCode = 0;
+  try {
+    execSync(`git ls-remote --exit-code --tags origin ${version}`, {
+      cwd: cwd,
+    });
+  } catch (e) {
+    exitCode = e.status;
+  } finally {
+    if (exitCode == 0) {
+      cb('当前工程版本号已经被打成tag');
+    } else if (exitCode != 2) {
+      cb('获取远程仓库tag失败');
+    }
   }
 });
 
