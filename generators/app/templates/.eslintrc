@@ -64,7 +64,7 @@
     "eqeqeq": [1],
     "global-strict": [0, "never"],
     "guard-for-in": 0,
-    "indent": [2, 2],
+    "indent": [2, 2, { "SwitchCase": 1 }],
     "jsx-quotes": [2, "prefer-double"],
     "max-len": [1, 100, 2],
     "no-bitwise": 1,
