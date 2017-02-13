@@ -1,3 +1,6 @@
+# 0.0.9
+* 修复build：pre-eslint正则匹配的bug
+
 # 0.0.7
 
 * 修改eslint规则

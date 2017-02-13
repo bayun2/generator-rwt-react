@@ -25,7 +25,7 @@ module.exports = {
   postcss: [require('autoprefixer')],
   module: {
     loaders: [{
-      test: /\.js?/,
+      test: /\.js/,
       loaders: ['babel'],
       exclude: /node_modules/
     }, {

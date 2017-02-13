@@ -65,7 +65,7 @@ gulp.task('build', ['clean'], () => {
     ],
     module: {
       preLoaders: [{
-        test: /\.js?/,
+        test: /\.js/,
         loader: 'eslint-loader',
         exclude: /node_modules/
       }]
@@ -79,7 +79,7 @@ gulp.task('build', ['clean'], () => {
 gulp.task('dev', cb => {
   const app = express();
   wpConfig.module.loaders[0] = {
-    test: /\.js?/,
+    test: /\.js/,
     loaders: ['react-hot', 'babel'],
     exclude: /node_modules/
   };
