@@ -32,11 +32,11 @@ module.exports = {
       loader: ExtractTextPlugin.extract('style-loader', 'css-loader!postcss-loader!less-loader')
     }, {
       test: /\.less/,
-      loaders: ['style', 'css', 'postcss', 'less'],
+      loaders: ['style', 'css?modules&localIdentName=[name]__[local]-[hash:base64:5]', 'postcss', 'less'],
       exclude: /(index|reset)\.less$/
     }, {
       test: /\.css$/,
-      loaders: ['style', 'css', 'postcss']
+      loaders: ['style', 'css?modules&localIdentName=[name]__[local]-[hash:base64:5]', 'postcss']
     }, {
       test: /\.(png|jpg|jpeg|gif|svg)$/,
       loaders: ['url?limit=8192']
