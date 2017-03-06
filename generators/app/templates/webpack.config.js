@@ -1,6 +1,5 @@
 'use strict';
 const path = require('path');
-const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
@@ -15,8 +14,9 @@ module.exports = {
     publicPath: '/dist/'
   },
   externals:{
-    'zepto':'Zepto',
-    'flipsnap':'Flipsnap'
+    zepto:'Zepto',
+    react:'React',
+    'react-dom':'ReactDOM'
   },
   resolve: {
     modulesDirectories: ['node_modules', './src'],
@@ -25,15 +25,16 @@ module.exports = {
   postcss: [require('autoprefixer')],
   module: {
     loaders: [{
-      test: /\.js?/,
-      loaders: ['babel']
+      test: /\.js/,
+      loaders: ['babel'],
+      exclude: /node_modules/
     }, {
-      test: /(index|reset)\.less$/,
+      test: /(index)\.less$/,
       loader: ExtractTextPlugin.extract('style-loader', 'css-loader!postcss-loader!less-loader')
     }, {
       test: /\.less/,
       loaders: ['style', 'css?modules&localIdentName=[name]__[local]-[hash:base64:5]', 'postcss', 'less'],
-      exclude: /(index|reset)\.less$/
+      exclude: /(index)\.less$/
     }, {
       test: /\.css$/,
       loaders: ['style', 'css?modules&localIdentName=[name]__[local]-[hash:base64:5]', 'postcss']
