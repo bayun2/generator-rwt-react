@@ -1,3 +1,6 @@
+# 0.1.0
+* 增加css module
+
 # 0.0.9
 * 修复build：pre-eslint正则匹配的bug
 
