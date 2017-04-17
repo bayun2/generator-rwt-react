@@ -1,60 +1,27 @@
-import './index.less';
-
 import React from 'react';
 import ReactDOM from 'react-dom';
+import './index.less';
+import App from './App';
 
-import MyComponent from './myComponent';
-
-let pagePath, apiPath, apiSuffix;
-if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'debugremote') {
-  pagePath = 'wealth/page/newAccount/requestWitness';
-  apiPath = `${location.protocol}//${location.host}/wealth/api/newAccount`;
-  apiSuffix = '';
-} else if (process.env.NODE_ENV === 'development') {
-  pagePath = 'pages/index';
-  apiPath = `${location.protocol}//${location.host}/data`;
-  apiSuffix = '.json';
-}
-
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-
-    };
-
-    this.funcName = [];
-    this.funcName.forEach(funcName => {
-      this[funcName] = this[funcName].bind(this);
+// let pagePath, apiPath, apiSuffix;
+// if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'debugremote') {
+//   pagePath = 'wealth/page/newAccount/requestWitness';
+//   apiPath = `${location.protocol}//${location.host}/wealth/api/newAccount`;
+//   apiSuffix = '';
+// } else if (process.env.NODE_ENV === 'development') {
+//   pagePath = 'pages/index';
+//   apiPath = `${location.protocol}//${location.host}/data`;
+//   apiSuffix = '.json';
+// }
+const rootEl = document.getElementById('J-activity');
+if (process.env.NODE_ENV !== 'production') {
+  if (module.hot) {
+    import('react-hot-loader').then(({AppContainer}) => {
+      const render = () => ReactDOM.render(<AppContainer><App /></AppContainer>, rootEl);
+      render();
+      module.hot.accept('./App', render);
     });
   }
-
-  componentDidMount() {
-
-  }
-
-  render() {
-    return (
-      <div>
-
-      </div>
-    );
-  }
-}
-
-App.defaultProps = {
-
-};
-
-App.propTypes = {
-
-};
-
-const rootInstance = ReactDOM.render(<App/>, document.getElementById('J-activity'));
-
-if (process.env.NODE_ENV === 'development') {
-  require('react-hot-loader/Injection').RootInstanceProvider.injectProvider({
-    getRootInstances: () => [rootInstance]
-  });
+} else {
+  ReactDOM.render(<App />, document.getElementById('J-activity'));
 }

@@ -2,6 +2,8 @@
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
+const production = process.env.NODE_ENV === 'production';
+
 module.exports = {
   entry: {
     index: [
@@ -11,7 +13,8 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'dist'),
     filename: '[name].js',
-    publicPath: '/dist/'
+    publicPath: '/dist/',
+    chunkFilename: '[chunkhash].js'
   },
   externals:{
     zepto:'Zepto',
@@ -19,29 +22,43 @@ module.exports = {
     'react-dom':'ReactDOM'
   },
   resolve: {
-    modulesDirectories: ['node_modules', './src'],
-    extensions: ['', '.js']
+    modules: ['node_modules', './src'],
   },
-  postcss: [require('autoprefixer')],
   module: {
-    loaders: [{
+    rules: [{
       test: /\.js/,
-      loaders: ['babel'],
+      loader: 'babel-loader',
       exclude: /node_modules/
     }, {
-      test: /(index)\.less$/,
-      loader: ExtractTextPlugin.extract('style-loader', 'css-loader!postcss-loader!less-loader')
-    }, {
-      test: /\.less/,
-      loaders: ['style', 'css?modules&localIdentName=[name]__[local]-[hash:base64:5]', 'postcss', 'less'],
-      exclude: /(index)\.less$/
-    }, {
-      test: /\.css$/,
-      loaders: ['style', 'css?modules&localIdentName=[name]__[local]-[hash:base64:5]', 'postcss']
-    }, {
+      test: /\.(less|css)$/,
+      use: ExtractTextPlugin.extract({
+        fallbackLoader: 'style-loader',
+        use: [
+          {
+            loader: 'css-loader',
+            options: {
+              minimize: production,
+              modules: true,
+              localIdentName: '[name]__[local]-[hash:base64:5]',
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins: [require('autoprefixer')],
+            }
+          },
+          {
+            loader: 'less-loader'
+          }
+        ]
+      })
+    },{
       test: /\.(png|jpg|jpeg|gif|svg)$/,
-      loaders: ['url?limit=8192']
+      use: ['url?limit=8192']
     }]
   },
-  plugins: []
+  plugins: [
+    new ExtractTextPlugin("[name].css"),
+  ]
 };

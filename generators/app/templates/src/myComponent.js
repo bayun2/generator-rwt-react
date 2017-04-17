@@ -12,7 +12,7 @@ class MyComponent extends React.Component {
 
   render() {
     return (
-        <div></div>
+        <div>123</div>
     );
   }
 }
@@ -25,4 +25,4 @@ MyComponent.propTypes = {
 
 }
 
-module.exports = MyComponent;
+export default MyComponent;

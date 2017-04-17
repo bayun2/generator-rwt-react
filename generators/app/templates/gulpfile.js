@@ -9,7 +9,6 @@ const merge = require('lodash.merge');
 const wpConfig = require('./webpack.config.js');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const execSync = require('child_process').execSync;
-const fs = require('fs');
 const path = require('path');
 
 gulp.task('clean', ['checkVersion'], cb => {
@@ -20,13 +19,7 @@ gulp.task('clean', ['checkVersion'], cb => {
 
 gulp.task('checkVersion', cb => {
   const cwd = process.cwd();
-  let version;
-  try {
-    const pkg = JSON.parse(fs.readFileSync(path.join(cwd, 'package.json'), 'utf-8'));
-    version = pkg.version;
-  } catch (e) {
-    cb(e);
-  }
+  const version = process.env.npm_package_version;
 
   let exitCode = 0;
   try {
@@ -46,62 +39,53 @@ gulp.task('checkVersion', cb => {
   }
 });
 
-gulp.task('build', ['clean'], () => {
-  const config = merge(wpConfig, {
-    devtool: 'source-map',
-    plugins: [
-      new webpack.DefinePlugin({
-        'process.env': {
-          NODE_ENV: JSON.stringify(process.env.NODE_ENV)
-        }
-      }),
-      new ExtractTextPlugin('index.css'),
-      new webpack.optimize.OccurenceOrderPlugin(),
-      new webpack.optimize.UglifyJsPlugin({
-        compressor: {
-          warnings: false
-        }
-      })
-    ],
-    module: {
-      preLoaders: [{
-        test: /\.js/,
-        loader: 'eslint-loader',
-        exclude: /node_modules/
-      }]
-    }
-  });
+gulp.task('build', ['clean'],() => {
+  wpConfig.devtool = 'source-map'
+  wpConfig.module.rules.push({
+    test: /\.js/,
+    loader: 'eslint-loader',
+    enforce: 'pre',
+    exclude: /node_modules/
+  })
+  wpConfig.plugins.push(
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV)
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compressor: {
+        warnings: false
+      }
+    })
+  )
   return gulp.src('./src/**/*.js')
-    .pipe(gulpWebpack(config))
+    .pipe(gulpWebpack(wpConfig, webpack))
     .pipe(gulp.dest('dist'));
 });
 
 gulp.task('dev', cb => {
   const app = express();
-  wpConfig.module.loaders[0] = {
-    test: /\.js/,
-    loaders: ['react-hot', 'babel'],
-    exclude: /node_modules/
-  };
   const config = objectAssign({}, wpConfig, {
     devtool: 'eval',
     entry: {
       index: [
-        'webpack-hot-middleware/client',
+        'react-hot-loader/patch',
+        'webpack-hot-middleware/client?http://localhost:80',
+        'webpack/hot/only-dev-server',
         './src/index.js'
       ]
-    },
-    plugins: [
-      new webpack.DefinePlugin({
-        'process.env': {
-          NODE_ENV: JSON.stringify(process.env.NODE_ENV)
-        }
-      }),
-      new webpack.NoErrorsPlugin(),
-      new ExtractTextPlugin('index.css'),
-      new webpack.HotModuleReplacementPlugin()
-    ]
+    }
   });
+  config.plugins.push(
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV)
+      }
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin()
+  )
   const compiler = webpack(config);
   app.use(require('webpack-dev-middleware')(compiler, {
     noInfo: true,
@@ -115,6 +99,7 @@ gulp.task('dev', cb => {
   app.post('/data/:name', (req, res) => {
     res.sendFile(path.join(__dirname, 'data', req.params.name));
   });
+  require('./data/data.js')(app);
   app.listen(80, err => {
     if (err) {
       console.log(err);
