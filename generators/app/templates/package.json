@@ -27,6 +27,7 @@
     "body-parser": "^1.17.1",
     "css-loader": "^0.28.0",
     "del": "^2.2.0",
+    "es6-promise": "^4.1.0",
     "eslint": "^3.10.2",
     "eslint-loader": "^1.7.1",
     "eslint-plugin-react": "^4.1.0",

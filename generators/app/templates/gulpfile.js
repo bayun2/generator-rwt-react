@@ -10,11 +10,11 @@ const wpConfig = require('./webpack.config.js');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const execSync = require('child_process').execSync;
 const path = require('path');
+const bodyParser = require('body-parser');
+const fs = require('fs');
 
 gulp.task('clean', ['checkVersion'], cb => {
-  del(['dist']).then(() => {
-    cb();
-  });
+  del(['dist']).then(() => cb());
 });
 
 gulp.task('checkVersion', cb => {
@@ -41,18 +41,7 @@ gulp.task('checkVersion', cb => {
 
 gulp.task('build', ['clean'],() => {
   wpConfig.devtool = 'source-map'
-  wpConfig.module.rules.push({
-    test: /\.js/,
-    loader: 'eslint-loader',
-    enforce: 'pre',
-    exclude: /node_modules/
-  })
   wpConfig.plugins.push(
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV)
-      }
-    }),
     new webpack.optimize.UglifyJsPlugin({
       compressor: {
         warnings: false
@@ -66,30 +55,20 @@ gulp.task('build', ['clean'],() => {
 
 gulp.task('dev', cb => {
   const app = express();
-  const config = objectAssign({}, wpConfig, {
-    devtool: 'eval',
-    entry: {
-      index: [
-        'react-hot-loader/patch',
-        'webpack-hot-middleware/client?http://localhost:80',
-        'webpack/hot/only-dev-server',
-        './src/index.js'
-      ]
-    }
-  });
-  config.plugins.push(
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV)
-      }
-    }),
+  wpConfig.devtool = 'eval';
+  Object.keys(wpConfig.entry).forEach(k => wpConfig.entry[k].unshift(
+    'react-hot-loader/patch',
+    'webpack-hot-middleware/client?http://localhost:80',
+    'webpack/hot/only-dev-server'
+  ));
+  wpConfig.plugins.push(
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin()
   )
-  const compiler = webpack(config);
+  const compiler = webpack(wpConfig);
   app.use(require('webpack-dev-middleware')(compiler, {
     noInfo: true,
-    publicPath: config.output.publicPath
+    publicPath: wpConfig.output.publicPath
   }));
   app.use(require('webpack-hot-middleware')(compiler));
   app.use(express.static(__dirname));
@@ -99,16 +78,44 @@ gulp.task('dev', cb => {
   app.post('/data/:name', (req, res) => {
     res.sendFile(path.join(__dirname, 'data', req.params.name));
   });
-  require('./data/data.js')(app);
-  app.listen(80, err => {
-    if (err) {
-      console.log(err);
-      return;
-    } else {
-      console.log('Page is running at: http://local.forexmaster.cn/pages/index.html');
+
+  // mock 数据
+  app.use(bodyParser.json());
+  let router = express.Router();
+  app.use((req, res, next) => router(req, res, next));
+  function setRouter() {
+    router = express.Router();
+    fs.readdirSync(path.join(__dirname, './data')).forEach(filename => {
+      const p = path.join(__dirname, './data', filename);
+      require(path.join(__dirname, './data', filename))(router, require('faker'));
+    })
+  }
+  setRouter();
+  // 热更新data
+  fs.watch(path.join(__dirname, './data'), (eventType, filename) => {
+    try {
+      const p = path.join(__dirname, './data', filename);
+      cleanCache(p);
+      setRouter();
+    } catch (ex) {
+      console.error('module update failed:', ex);
     }
+  });
+
+  app.listen(80, err => {
+    if (err) return console.log(err);
+    console.log('Page is running at: http://local.forexmaster.cn/pages/index.html');
     cb();
   });
 });
+
+function cleanCache(modulePath) {
+  const path = require.resolve(modulePath);
+  let module = require.cache[path];
+  if (module && module.parent) {
+      module.parent.children.splice(module.parent.children.indexOf(module), 1);
+  }
+  require.cache[path] = null;
+}
 
 gulp.task('default', ['build']);

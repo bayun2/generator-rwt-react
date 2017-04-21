@@ -1,12 +1,14 @@
 'use strict';
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const webpack = require('webpack');
 
 const production = process.env.NODE_ENV === 'production';
 
 module.exports = {
   entry: {
     index: [
+      'es6-promise/auto',
       './src/index.js'
     ]
   },
@@ -27,13 +29,19 @@ module.exports = {
   module: {
     rules: [{
       test: /\.js/,
+      loader: 'eslint-loader',
+      enforce: 'pre',
+      exclude: /node_modules/
+    }, {
+      test: /\.js/,
       loader: 'babel-loader',
       exclude: /node_modules/
     }, {
       test: /\.(less|css)$/,
       use: ExtractTextPlugin.extract({
-        fallbackLoader: 'style-loader',
+        fallback: 'style-loader',
         use: [
+
           {
             loader: 'css-loader',
             options: {
@@ -60,5 +68,10 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin("[name].css"),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV)
+      }
+    }),
   ]
 };
