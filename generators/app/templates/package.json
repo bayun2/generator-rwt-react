@@ -10,9 +10,9 @@
     "registry": "http://registry.npmjs.org/"
   },
   "scripts": {
-    "dev": "sudo NODE_ENV=development gulp dev",
-    "build": "NODE_ENV=production gulp build",
-    "debug": "sudo NODE_ENV=debugremote gulp dev"
+    "dev": "sudo NODE_ENV=development ./node_modules/gulp/bin/gulp.js dev",
+    "build": "NODE_ENV=production ./node_modules/gulp/bin/gulp.js build",
+    "debug": "sudo NODE_ENV=debugremote ./node_modules/gulp/bin/gulp.js dev"
   },
   "license": "MIT",
   "devDependencies": {
@@ -25,6 +25,7 @@
     "babel-preset-stage-0": "^6.5.0",
     "babel-preset-stage-1": "^6.3.13",
     "body-parser": "^1.17.1",
+    "core-js": "^2.4.1",
     "css-loader": "^0.28.0",
     "del": "^2.2.0",
     "es6-promise": "^4.1.0",
