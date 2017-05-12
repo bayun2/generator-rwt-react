@@ -1,3 +1,9 @@
+# 0.1.2
+webpack配置优化
+
+# 0.1.1
+webpack升到2
+
 # 0.1.0
 * 增加css module
 

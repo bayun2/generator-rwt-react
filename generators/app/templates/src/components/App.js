@@ -1,12 +1,14 @@
 import React from 'react';
 import styles from './App.less';
-import fetch from 'isomorphic-fetch';
 
 class App extends React.Component {
   state = {
     get: {},
     getList: [],
     postData: {}
+  }
+  componentDidMount() {
+    console.log(this.props);
   }
   getData = () => {
     fetch('/fdt/api/demo/get')

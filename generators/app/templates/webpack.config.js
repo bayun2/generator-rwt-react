@@ -9,6 +9,7 @@ module.exports = {
   entry: {
     index: [
       'es6-promise/auto',
+      'isomorphic-fetch',
       './src/index.js'
     ]
   },
