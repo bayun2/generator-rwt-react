@@ -29,7 +29,8 @@ module.exports = yeoman.Base.extend({
       'README.md',
       'HISTORY.md',
       'gulpfile.js',
-      'webpack.config.js'
+      'webpack.config.js',
+      'deploy.js'
     ];
 
     var prompts = [{
