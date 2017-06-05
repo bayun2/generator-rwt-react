@@ -6,7 +6,7 @@ let suffix = process.env.npm_config_suffix;
 const dev = process.env.npm_config_dev;
 // npm run deploy --test
 const test = process.env.npm_config_test;
-console.log(`发布工程名称： aDemo${suffix?`-${suffix}`: ''}${test? '+test' : ''}`)
+console.log(`发布工程名称： <%= name %>${suffix?`-${suffix}`: ''}${test? '+test' : ''}`)
 if (suffix) {
   suffix = encodeURIComponent(`-${suffix}`);
 } else {
