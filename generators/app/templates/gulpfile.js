@@ -68,7 +68,7 @@ gulp.task('dev', cb => {
   wpConfig.devtool = 'eval';
   Object.keys(wpConfig.entry).forEach(k => wpConfig.entry[k].unshift(
     'react-hot-loader/patch',
-    `webpack-hot-middleware/client?http://localhost:${port}`,
+    `webpack-hot-middleware/client?path=http://localhost:${port}/__webpack_hmr`,
     'webpack/hot/only-dev-server'
   ));
   wpConfig.plugins.push(

@@ -4,6 +4,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const webpack = require('webpack');
 
 const production = process.env.NODE_ENV === 'production';
+const development = process.env.NODE_ENV === 'development';
 
 module.exports = {
   entry: {
@@ -71,7 +72,8 @@ module.exports = {
     new ExtractTextPlugin("[name].css"),
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV)
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        basename: JSON.stringify(!development ? '/online-address' : '/pages/index.html')
       }
     }),
   ]
