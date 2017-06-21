@@ -12,41 +12,41 @@ class App extends React.Component {
   }
   getData = () => {
     fetch('/fdt/api/demo/get')
-    .then(res => res.json())
-    .then(({meta, data, message}) => {
-      if (meta.code !== 200) {
-        return window.fdt.superDialog({
-          content: message,
+      .then(res => res.json())
+      .then(({meta, data, message}) => {
+        if (meta.code !== 200) {
+          return window.fdt.superDialog({
+            content: message,
+            buttons: JSON.stringify(['确认'])
+          });
+        }
+        this.setState({get: data});
+      })
+      .catch(() => {
+        window.fdt.superDialog({
+          content: '网络错误，请刷新重试',
           buttons: JSON.stringify(['确认'])
         });
-      }
-      this.setState({get: data});
-    })
-    .catch(() => {
-      window.fdt.superDialog({
-        content: '网络错误，请刷新重试',
-        buttons: JSON.stringify(['确认'])
       });
-    });
   }
   getList = () => {
     fetch('/fdt/api/demo/getlist?l=5')
-    .then(res => res.json())
-    .then(({meta, data, message}) => {
-      if (meta.code !== 200) {
-        return window.fdt.superDialog({
-          content: message,
+      .then(res => res.json())
+      .then(({meta, data, message}) => {
+        if (meta.code !== 200) {
+          return window.fdt.superDialog({
+            content: message,
+            buttons: JSON.stringify(['确认'])
+          });
+        }
+        this.setState({getList: data});
+      })
+      .catch(() => {
+        window.fdt.superDialog({
+          content: '网络错误，请刷新重试',
           buttons: JSON.stringify(['确认'])
         });
-      }
-      this.setState({getList: data});
-    })
-    .catch(() => {
-      window.fdt.superDialog({
-        content: '网络错误，请刷新重试',
-        buttons: JSON.stringify(['确认'])
       });
-    });
   }
   postData = () => {
     fetch('/fdt/api/demo/post', {
@@ -57,22 +57,22 @@ class App extends React.Component {
       },
       body: JSON.stringify({name: '张三', passwword: '123456'})
     })
-    .then(res => res.json())
-    .then(({meta, data, message}) => {
-      if (meta.code !== 200) {
-        return window.fdt.superDialog({
-          content: message,
+      .then(res => res.json())
+      .then(({meta, data, message}) => {
+        if (meta.code !== 200) {
+          return window.fdt.superDialog({
+            content: message,
+            buttons: JSON.stringify(['确认'])
+          });
+        }
+        this.setState({postData: data});
+      })
+      .catch(() => {
+        window.fdt.superDialog({
+          content: '网络错误，请刷新重试',
           buttons: JSON.stringify(['确认'])
         });
-      }
-      this.setState({postData: data});
-    })
-    .catch(() => {
-      window.fdt.superDialog({
-        content: '网络错误，请刷新重试',
-        buttons: JSON.stringify(['确认'])
       });
-    });
   }
   render() {
     return (

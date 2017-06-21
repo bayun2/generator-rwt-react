@@ -1,5 +1,5 @@
 module.exports = function(router, faker) {
-  router.post('/fdt/api/demo/post', function(req, res) {
+  router.post('/fdt/api/demo/post', (req, res) => {
     res.send({
       meta: {
         code: 200,

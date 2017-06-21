@@ -2,9 +2,9 @@
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const webpack = require('webpack');
-
 const production = process.env.NODE_ENV === 'production';
 const development = process.env.NODE_ENV === 'development';
+const DashboardPlugin = require('webpack-dashboard/plugin');
 
 module.exports = {
   entry: {
@@ -43,7 +43,6 @@ module.exports = {
       use: ExtractTextPlugin.extract({
         fallback: 'style-loader',
         use: [
-
           {
             loader: 'css-loader',
             options: {
@@ -65,16 +64,18 @@ module.exports = {
       })
     },{
       test: /\.(png|jpg|jpeg|gif|svg)$/,
-      use: ['url?limit=8192']
+      use: ['url-loader?limit=8192']
     }]
   },
   plugins: [
-    new ExtractTextPlugin("[name].css"),
+    new ExtractTextPlugin('[name].css'),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
         basename: JSON.stringify(!development ? '/online-address' : '/pages/index.html')
       }
     }),
+    new webpack.optimize.ModuleConcatenationPlugin(),
+    new DashboardPlugin()
   ]
 };

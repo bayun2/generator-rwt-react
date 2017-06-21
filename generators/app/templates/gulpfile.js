@@ -4,9 +4,7 @@ const gulpWebpack = require('webpack-stream');
 const express = require('express');
 const gulp = require('gulp');
 const del = require('del');
-const objectAssign = require('object-assign');
 const wpConfig = require('./webpack.config.js');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const execSync = require('child_process').execSync;
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -39,7 +37,7 @@ gulp.task('checkVersion', cb => {
 });
 
 gulp.task('build', ['clean'],() => {
-  wpConfig.devtool = 'source-map'
+  wpConfig.devtool = 'source-map';
   wpConfig.plugins.push(
     new webpack.optimize.UglifyJsPlugin({
       // 最紧凑的输出
@@ -58,8 +56,10 @@ gulp.task('build', ['clean'],() => {
         reduce_vars: true,
       }
     })
-  )
-  return gulp.src('./src/**/*.js').pipe(gulpWebpack(wpConfig, webpack)).pipe(gulp.dest('dist'));
+  );
+  return gulp.src('./src/**/*.js')
+    .pipe(gulpWebpack(wpConfig, webpack))
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('dev', cb => {
@@ -74,7 +74,7 @@ gulp.task('dev', cb => {
   wpConfig.plugins.push(
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin()
-  )
+  );
   const compiler = webpack(wpConfig);
   app.use(require('webpack-dev-middleware')(compiler, {
     noInfo: true,
@@ -91,14 +91,12 @@ gulp.task('dev', cb => {
 
   // mock 数据
   app.use(bodyParser.json());
-  let router = express.Router();
+  const router = new express.Router();
   app.use((req, res, next) => router(req, res, next));
   function setRouter() {
-    router = express.Router();
     fs.readdirSync(path.join(__dirname, './data')).forEach(filename => {
-      const p = path.join(__dirname, './data', filename);
       require(path.join(__dirname, './data', filename))(router, require('faker'));
-    })
+    });
   }
   setRouter();
   // 热更新data
@@ -121,9 +119,9 @@ gulp.task('dev', cb => {
 
 function cleanCache(modulePath) {
   const path = require.resolve(modulePath);
-  let module = require.cache[path];
+  const module = require.cache[path];
   if (module && module.parent) {
-      module.parent.children.splice(module.parent.children.indexOf(module), 1);
+    module.parent.children.splice(module.parent.children.indexOf(module), 1);
   }
   require.cache[path] = null;
 }

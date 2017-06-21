@@ -1,5 +1,5 @@
 module.exports = function(router, faker) {
-  router.get('/fdt/api/demo/getlist', function(req, res) {
+  router.get('/fdt/api/demo/getlist',(req, res) => {
     const data = [];
     for (let i = 0; i < req.query.l; i++) {
       data.push(`${i + 1}. ${faker.lorem.sentence()}`);

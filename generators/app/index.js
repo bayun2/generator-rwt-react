@@ -1,37 +1,29 @@
 'use strict';
-var yeoman = require('yeoman-generator');
-var chalk = require('chalk');
-var yosay = require('yosay');
-var fs = require('fs');
+const Generator = require('yeoman-generator');
+const commandExists = require('command-exists').sync;
+const yeoman = require('yeoman-generator');
+const chalk = require('chalk');
+const yosay = require('yosay');
+const fs = require('fs');
 
-module.exports = yeoman.Base.extend({
-  constructor: function () {
-    yeoman.Base.apply(this, arguments);
-  },
-  prompting: function () {
+module.exports = class extends Generator {
+  constructor(args, opts) {
+    super(args, opts);
+    this.option('skip-install', {
+      desc: 'Skips the message after the installation of dependencies',
+      type: Boolean
+    });
+  }
+
+  prompting() {
     const files = fs.readdirSync(process.cwd());
     if (files.length) {
       return console.log('Error: Current directory is not empty');
     }
-    var done = this.async();
-
     // Have Yeoman greet the user.
     this.log(yosay(
       'Welcome to the amazing ' + chalk.red('generator-rwt-react') + ' generator!'
     ));
-
-    var DIRECTORIES = ['src', 'test', 'data', 'pages'];
-    var FILES = [
-      '.babelrc',
-      '.eslintrc',
-      'LICENSE',
-      'package.json',
-      'README.md',
-      'HISTORY.md',
-      'gulpfile.js',
-      'webpack.config.js',
-      'deploy.js'
-    ];
 
     var prompts = [{
       type: 'input',
@@ -54,16 +46,55 @@ module.exports = yeoman.Base.extend({
       message: 'Description',
       default: '...'
     }];
-    this.prompt(prompts, function (props) {
-      this.props = props;
-      DIRECTORIES.forEach(val => this.directory(val, val));
-      this.template('gitignore', '.gitignore');
-      FILES.forEach(filename => this.template(filename, filename, props));
-      done();
-    }.bind(this));
-  },
-
-  install: function () {
-    this.installDependencies();
+    return this.prompt(prompts).then(answers => {
+      const features = answers.features;
+      const hasFeature = feat => features && features.indexOf(feat) !== -1;
+      this.answers = answers;
+    });
   }
-});
+
+  writing() {
+    this._writingGitignore();
+    this._writingStaticFile();
+  }
+  _writingGitignore() {
+    this.fs.copy(
+      this.templatePath('gitignore'),
+      this.destinationPath('.gitignore')
+    );
+  }
+  _writingStaticFile() {
+    const DIRECTORIES = [
+      'src',
+      'data',
+      'pages'
+    ];
+    const FILES = [
+      '.babelrc',
+      '.eslintrc',
+      'LICENSE',
+      'gulpfile.js',
+      'webpack.config.js',
+    ];
+    const FILESTPL = [
+      'deploy.js',
+      'package.json',
+      'HISTORY.md',
+      'README.md',
+    ];
+    DIRECTORIES.forEach(dirname => this.fs.copy(this.templatePath(dirname), this.destinationPath(dirname)));
+    FILES.forEach(filename => this.fs.copyTpl(this.templatePath(filename), this.destinationPath(filename)));
+    FILESTPL.forEach(filename => this.fs.copyTpl(this.templatePath(filename), this.destinationPath(filename), this.answers));
+  }
+
+  install() {
+    const hasYarn = commandExists('yarn');
+    this.installDependencies({
+      npm: !hasYarn,
+      yarn: hasYarn,
+      bower: false,
+      skipMessage: this.options['skip-install-message'],
+      skipInstall: this.options['skip-install']
+    });
+  }
+};
