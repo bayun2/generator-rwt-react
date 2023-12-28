@@ -1,5 +1,5 @@
-# generator-rwt-react [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
-> 基于yeoman的react脚手架
+# generator-rwt-react
+> 基于 yeoman 的 react 脚手架
 
 ## Installation
 
